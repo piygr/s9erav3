@@ -69,7 +69,9 @@ class AlbumentationsTransform:
 class ImageNetDataModule(pl.LightningDataModule):
     def __init__(self):
         super().__init__()
-        self.data_dir = CONFIG["data_dir"]
+        #self.data_dir = CONFIG["data_dir"]
+        self.train_data_dir = CONFIG["train_data_dir"]
+        self.val_data_dir = CONFIG["val_data_dir"]
         self.batch_size = CONFIG["batch_size"]
         self.num_workers = CONFIG["num_workers"]
         self.augment_prob = CONFIG["augment_prob"]
@@ -77,17 +79,17 @@ class ImageNetDataModule(pl.LightningDataModule):
     def setup(self, stage: str = None):
         if stage in (None, "fit", "validate"):
             self.train_dataset = datasets.ImageFolder(
-                root=f"{self.data_dir}/train",
+                root=f"{self.train_data_dir}",
                 transform=AlbumentationsTransform(p=self.augment_prob)
             )
             self.val_dataset = datasets.ImageFolder(
-                root=f"{self.data_dir}/val",
-                transform=AlbumentationsTransform(p=0.0, eval=True)  # No augmentations for validation
+                root=f"{self.val_data_dir}",
+                transform=AlbumentationsTransform(eval=True)  # No augmentations for validation
             )
         if stage == "test":
             self.test_dataset = datasets.ImageFolder(
-                root=f"{self.data_dir}/test",
-                transform=AlbumentationsTransform(p=0.0, eval=True)  # No augmentations for testing
+                root=f"{self.val_data_dir}",
+                transform=AlbumentationsTransform(eval=True)  # No augmentations for testing
             )
 
     def train_dataloader(self):

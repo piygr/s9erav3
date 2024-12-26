@@ -1,6 +1,7 @@
 CONFIG = {
     # General Configuration
-    "data_dir": "/path/to/imagenet",  # Path to ImageNet dataset
+    "train_data_dir": "/kaggle/input/imagenet1k-subset-100k-train-and-10k-val/imagenet_subtrain",  # Path to ImageNet dataset
+    "val_data_dir": "/kaggle/input/imagenet1k-subset-100k-train-and-10k-val/imagenet_subval",
     "num_classes": 1000,  # Number of prediction classes
     "batch_size": 128,  # Batch size for training
     "epochs": 40,  # Total number of epochs
