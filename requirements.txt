@@ -2,3 +2,4 @@ pytorch-lightning
 torch
 torchvision
 albumentations
+torch-lr-finder
