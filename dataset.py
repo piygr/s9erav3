@@ -27,10 +27,10 @@ class AlbumentationsTransform:
             ]
         else:
             augs = [
-                A.SmallestMaxSize(max_size=IMAGE_SIZE*scale),
+                A.SmallestMaxSize(max_size=int(IMAGE_SIZE*scale)),
                 A.PadIfNeeded(
-                    min_height=IMAGE_SIZE*scale,
-                    min_width=IMAGE_SIZE*scale,
+                    min_height=int(IMAGE_SIZE*scale),
+                    min_width=int(IMAGE_SIZE*scale),
                     border_mode=cv2.BORDER_CONSTANT,
                 ),
                 A.RandomCrop(width=IMAGE_SIZE, height=IMAGE_SIZE),

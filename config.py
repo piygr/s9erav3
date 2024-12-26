@@ -12,7 +12,7 @@ CONFIG = {
 
     # Hardware Configuration
     "gpus": 1,  # Number of GPUs to use
-    "precision": 16,  # FP16 mixed precision training
+    "precision": "16-mixed",  # FP16 mixed precision training
 
     # DataLoader Configuration
     "num_workers": 4,  # Number of DataLoader workers

@@ -46,7 +46,8 @@ def main():
     # Trainer
     trainer = pl.Trainer(
         max_epochs=CONFIG["epochs"],
-        gpus=CONFIG["gpus"],
+        accelerator="gpu",
+        devices="auto",
         precision=CONFIG["precision"],  # Mixed precision training
         callbacks=[checkpoint_callback, lr_monitor],
         check_val_every_n_epoch=CONFIG["check_val_every_n_epoch"],  # Run validation every 5 epochs
