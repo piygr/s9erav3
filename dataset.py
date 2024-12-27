@@ -102,7 +102,7 @@ class ImageNetDataset:
             with open(class_mapping_path_file_path, "r") as file:
                 for line_number, line in enumerate(file):
                     # Split the line to get the first value
-                    first_value = line.split()[0]
+                    first_value = line.split()[0].strip()
                     # Map the first value to the line number
                     self.class_mapping[first_value] = line_number
 
@@ -115,7 +115,7 @@ class ImageNetDataset:
             df = pd.read_csv(label_file)
 
             # Convert mapping to a dictionary for better usability
-            imageid_label_mapping_dict = {row[0].lower(): self.class_mapping.get(row[1].split()[0]) for _, row in df.iterrows()}
+            imageid_label_mapping_dict = {row[0].lower().strip(): self.class_mapping.get(row[1].split()[0].strip()) for _, row in df.iterrows()}
 
             output_path = "./data_annotations_%s.csv" % ("train" if train else "val")
             with open(output_path, "a") as fw:
@@ -123,9 +123,9 @@ class ImageNetDataset:
                 for dirpath, dirnames, filenames in os.walk(data_dir):
                     for file in filenames:
                         # Get the relative path of the file
-                        relative_path = os.path.relpath(os.path.join(dirpath, file), data_dir)
-                        image_id = file.split(".")[0]
-                        if imageid_label_mapping_dict.get(image_id.lower()):
+                        relative_path = os.path.relpath(os.path.join(dirpath, file), data_dir).strip()
+                        image_id = file.split(".")[0].strip()
+                        if image_id.lower() in imageid_label_mapping_dict:
                             self.dataset.append((relative_path, imageid_label_mapping_dict[image_id.lower()]))
 
                             #write to file
