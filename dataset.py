@@ -1,3 +1,4 @@
+import os
 import pytorch_lightning as pl
 from torchvision import datasets
 from torch.utils.data import DataLoader
@@ -5,6 +6,9 @@ import albumentations as A
 from albumentations.pytorch import ToTensorV2
 import cv2
 import numpy as np
+import pandas as pd
+import torch
+from PIL import Image
 
 from config import CONFIG
 
@@ -66,29 +70,80 @@ class AlbumentationsTransform:
         image = np.array(image)
         return self.transform(image=image)["image"]
 
+
+class ImageNetDataset:
+    def __init__(self, train=True, transform=None):
+        self.transform = transform
+        self.dataset = []
+
+        class_mapping_path_file_path = CONFIG["root_dir"] + "/LOC_synset_mapping.txt"
+
+        # Initialize an empty dictionary to store the mapping
+        self.class_mapping = {}
+
+        # Open the file and parse it
+        with open(class_mapping_path_file_path, "r") as file:
+            for line_number, line in enumerate(file):
+                # Split the line to get the first value
+                first_value = line.split()[0]
+                # Map the first value to the line number
+                self.class_mapping[first_value] = line_number
+
+        data_dir = CONFIG["root_dir"] + "/ILSVRC/Data/CLS-LOC/train"
+        label_file = CONFIG["root_dir"] + "/LOC_train_solution.csv"
+        if not train:
+            data_dir = CONFIG["root_dir"] + "/ILSVRC/Data/CLS-LOC/val"
+            label_file = CONFIG["root_dir"] + "/LOC_val_solution.csv"
+
+        df = pd.read_csv(label_file)
+
+        # Convert mapping to a dictionary for better usability
+        imageid_label_mapping_dict = {row[0]: self.class_mapping.get(row[1].split()[0]) for _, row in df.iterrows()}
+
+
+        # Walk through the directory tree
+        for dirpath, dirnames, filenames in os.walk(data_dir):
+            for file in filenames:
+                # Get the relative path of the file
+                relative_path = os.path.relpath(os.path.join(dirpath, file), data_dir)
+                image_id = file.split(".")[0]
+                self.dataset.append((relative_path, imageid_label_mapping_dict[image_id]))
+
+
+    def __len__(self):
+        return len(self.dataset)
+
+    def __getitem__(self, idx):
+        image, label = self.dataset[idx]
+        image = Image.open(image)
+        image = np.array(image)  # Convert PIL Image to NumPy array
+        if self.transform:
+            augmented = self.transform(image=image)  # Albumentations transform
+            image = augmented["image"]  # Extract the transformed image
+        label = torch.tensor(label, dtype=torch.long)  # Convert label to tensor
+        return image, label
+
+
 class ImageNetDataModule(pl.LightningDataModule):
     def __init__(self):
         super().__init__()
-        #self.data_dir = CONFIG["data_dir"]
-        self.train_data_dir = CONFIG["train_data_dir"]
-        self.val_data_dir = CONFIG["val_data_dir"]
         self.batch_size = CONFIG["batch_size"]
         self.num_workers = CONFIG["num_workers"]
         self.augment_prob = CONFIG["augment_prob"]
 
     def setup(self, stage: str = None):
         if stage in (None, "fit", "validate"):
-            self.train_dataset = datasets.ImageFolder(
-                root=f"{self.train_data_dir}",
+            self.train_dataset = ImageNetDataset(
+                train=True,
                 transform=AlbumentationsTransform(p=self.augment_prob)
             )
-            self.val_dataset = datasets.ImageFolder(
-                root=f"{self.val_data_dir}",
+            self.val_dataset = ImageNetDataset(
+                train=False,
                 transform=AlbumentationsTransform(eval=True)  # No augmentations for validation
             )
         if stage == "test":
-            self.test_dataset = datasets.ImageFolder(
-                root=f"{self.val_data_dir}",
+            self.test_dataset = ImageNetDataset(
+                train=False,
                 transform=AlbumentationsTransform(eval=True)  # No augmentations for testing
             )
 
