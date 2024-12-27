@@ -1,6 +1,6 @@
 CONFIG = {
     # General Configuration
-    "root_dir": "",
+    "root_dir": "/kaggle/input/imagenet-object-localization-challenge",
     "train_data_dir": "/kaggle/input/imagenet1k-subset-100k-train-and-10k-val/imagenet_subtrain",  # Path to ImageNet dataset
     "val_data_dir": "/kaggle/input/imagenet1k-subset-100k-train-and-10k-val/imagenet_subval",
     "num_classes": 1000,  # Number of prediction classes
