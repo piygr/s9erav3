@@ -78,39 +78,57 @@ class ImageNetDataset:
         self.transform = transform
         self.dataset = []
 
-        class_mapping_path_file_path = CONFIG["root_dir"] + "/LOC_synset_mapping.txt"
+        annot_file = True
+        if CONFIG.get("data_annotation_file", {}):
+            if train and CONFIG["data_annotation_file"]["train"]:
+                df = pd.read_csv(CONFIG["data_annotation_file"]["train"])
+                self.dataset = [(row[0], row[1]) for _, row in df.iterrows()]
+            elif not train and CONFIG["data_annotation_file"]["val"]:
+                df = pd.read_csv(CONFIG["data_annotation_file"]["val"])
+                self.dataset = [ (row[0], row[1]) for _, row in df.iterrows() ]
+            else:
+                annot_file = False
+        else:
+            annot_file = False
 
-        # Initialize an empty dictionary to store the mapping
-        self.class_mapping = {}
+        if not annot_file:
 
-        # Open the file and parse it
-        with open(class_mapping_path_file_path, "r") as file:
-            for line_number, line in enumerate(file):
-                # Split the line to get the first value
-                first_value = line.split()[0]
-                # Map the first value to the line number
-                self.class_mapping[first_value] = line_number
+            class_mapping_path_file_path = CONFIG["root_dir"] + "/LOC_synset_mapping.txt"
 
-        data_dir = CONFIG["root_dir"] + "/ILSVRC/Data/CLS-LOC/train"
-        label_file = CONFIG["root_dir"] + "/LOC_train_solution.csv"
-        if not train:
-            data_dir = CONFIG["root_dir"] + "/ILSVRC/Data/CLS-LOC/val"
-            label_file = CONFIG["root_dir"] + "/LOC_val_solution.csv"
+            # Initialize an empty dictionary to store the mapping
+            self.class_mapping = {}
 
-        df = pd.read_csv(label_file)
+            # Open the file and parse it
+            with open(class_mapping_path_file_path, "r") as file:
+                for line_number, line in enumerate(file):
+                    # Split the line to get the first value
+                    first_value = line.split()[0]
+                    # Map the first value to the line number
+                    self.class_mapping[first_value] = line_number
 
-        # Convert mapping to a dictionary for better usability
-        imageid_label_mapping_dict = {row[0]: self.class_mapping.get(row[1].split()[0]) for _, row in df.iterrows()}
+            data_dir = CONFIG["root_dir"] + "/ILSVRC/Data/CLS-LOC/train"
+            label_file = CONFIG["root_dir"] + "/LOC_train_solution.csv"
+            if not train:
+                data_dir = CONFIG["root_dir"] + "/ILSVRC/Data/CLS-LOC/val"
+                label_file = CONFIG["root_dir"] + "/LOC_val_solution.csv"
+
+            df = pd.read_csv(label_file)
+
+            # Convert mapping to a dictionary for better usability
+            imageid_label_mapping_dict = {row[0].lower(): self.class_mapping.get(row[1].split()[0]) for _, row in df.iterrows()}
 
 
-        # Walk through the directory tree
-        for dirpath, dirnames, filenames in os.walk(data_dir):
-            for file in filenames:
-                # Get the relative path of the file
-                relative_path = os.path.relpath(os.path.join(dirpath, file), data_dir)
-                image_id = file.split(".")[0]
-                self.dataset.append((relative_path, imageid_label_mapping_dict[image_id]))
+            # Walk through the directory tree
+            for dirpath, dirnames, filenames in os.walk(data_dir):
+                for file in filenames:
+                    # Get the relative path of the file
+                    relative_path = os.path.relpath(os.path.join(dirpath, file), data_dir)
+                    image_id = file.split(".")[0]
+                    self.dataset.append((relative_path, imageid_label_mapping_dict[image_id.lower()]))
 
+            df = pd.DataFrame(self.dataset)
+            output_path = "./data_annotations_%s.csv" % ("train" if train else "val")
+            df.to_csv(output_path, index=False)
 
     def __len__(self):
         return len(self.dataset)
