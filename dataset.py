@@ -117,18 +117,19 @@ class ImageNetDataset:
             # Convert mapping to a dictionary for better usability
             imageid_label_mapping_dict = {row[0].lower(): self.class_mapping.get(row[1].split()[0]) for _, row in df.iterrows()}
 
-
-            # Walk through the directory tree
-            for dirpath, dirnames, filenames in os.walk(data_dir):
-                for file in filenames:
-                    # Get the relative path of the file
-                    relative_path = os.path.relpath(os.path.join(dirpath, file), data_dir)
-                    image_id = file.split(".")[0]
-                    self.dataset.append((relative_path, imageid_label_mapping_dict[image_id.lower()]))
-
-            df = pd.DataFrame(self.dataset)
             output_path = "./data_annotations_%s.csv" % ("train" if train else "val")
-            df.to_csv(output_path, index=False)
+            with open(output_path, "a") as fw:
+                # Walk through the directory tree
+                for dirpath, dirnames, filenames in os.walk(data_dir):
+                    for file in filenames:
+                        # Get the relative path of the file
+                        relative_path = os.path.relpath(os.path.join(dirpath, file), data_dir)
+                        image_id = file.split(".")[0]
+                        if imageid_label_mapping_dict.get(image_id.lower()):
+                            self.dataset.append((relative_path, imageid_label_mapping_dict[image_id.lower()]))
+
+                            #write to file
+                            fw.write(f"{relative_path},{imageid_label_mapping_dict[image_id.lower()]}\n")
 
     def __len__(self):
         return len(self.dataset)
