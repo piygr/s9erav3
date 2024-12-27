@@ -27,6 +27,7 @@ class AlbumentationsTransform:
                     min_height=IMAGE_SIZE,
                     min_width=IMAGE_SIZE,
                     border_mode=cv2.BORDER_CONSTANT,
+                    value=(0.485 * 255, 0.456 * 255, 0.406 * 255)
                 ),
             ]
         else:
@@ -36,9 +37,10 @@ class AlbumentationsTransform:
                     min_height=int(IMAGE_SIZE*scale),
                     min_width=int(IMAGE_SIZE*scale),
                     border_mode=cv2.BORDER_CONSTANT,
+                    value=(0.485 * 255, 0.456 * 255, 0.406 * 255)
                 ),
                 A.RandomCrop(width=IMAGE_SIZE, height=IMAGE_SIZE),
-                A.Rotate(limit=10, interpolation=1, border_mode=4, p=p),
+                A.Rotate(limit=10, interpolation=1, border_mode=4, value=(0.485 * 255, 0.456 * 255, 0.406 * 255), p=p),
                 A.ColorJitter(brightness=0.6, contrast=0.6, saturation=0.6, hue=0.6, p=p),
                 A.HorizontalFlip(p=p),
                 A.Blur(p=0.1),
