@@ -22,7 +22,7 @@ class AlbumentationsTransform:
 
         if eval:
             augs = [
-                A.SmallestMaxSize(max_size=IMAGE_SIZE),
+                A.LongestMaxSize(max_size=IMAGE_SIZE),
                 A.PadIfNeeded(
                     min_height=IMAGE_SIZE,
                     min_width=IMAGE_SIZE,
@@ -32,7 +32,7 @@ class AlbumentationsTransform:
             ]
         else:
             augs = [
-                A.SmallestMaxSize(max_size=int(IMAGE_SIZE*scale)),
+                A.LongestMaxSize(max_size=int(IMAGE_SIZE*scale)),
                 A.PadIfNeeded(
                     min_height=int(IMAGE_SIZE*scale),
                     min_width=int(IMAGE_SIZE*scale),
