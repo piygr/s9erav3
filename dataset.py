@@ -144,8 +144,7 @@ class ImageNetDataset:
         image = Image.open(image_dir + image)
         image = np.array(image)  # Convert PIL Image to NumPy array
         if self.transform:
-            augmented = self.transform(image=image)  # Albumentations transform
-            image = augmented["image"]  # Extract the transformed image
+            image = self.transform(image=image)  # Albumentations transform
         label = torch.tensor(label, dtype=torch.long)  # Convert label to tensor
         return image, label
 
