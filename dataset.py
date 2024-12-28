@@ -70,6 +70,9 @@ class AlbumentationsTransform:
 
     def __call__(self, image):
         image = np.array(image)
+        if len(image.shape) == 2:
+            image = np.stack([image] * 3, axis=-1)
+
         return self.transform(image=image)["image"]
 
 
@@ -77,6 +80,7 @@ class ImageNetDataset:
     def __init__(self, train=True, transform=None):
         self.transform = transform
         self.dataset = []
+        self.train = train
 
         annot_file = True
         if CONFIG.get("data_annotation_file", {}):
@@ -135,8 +139,9 @@ class ImageNetDataset:
         return len(self.dataset)
 
     def __getitem__(self, idx):
+        image_dir = CONFIG["root_dir"] + "/ILSVRC/Data/CLS-LOC/%s/" % ("train" if self.train else "val")
         image, label = self.dataset[idx]
-        image = Image.open(image)
+        image = Image.open(image_dir + image)
         image = np.array(image)  # Convert PIL Image to NumPy array
         if self.transform:
             augmented = self.transform(image=image)  # Albumentations transform

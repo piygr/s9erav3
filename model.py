@@ -74,6 +74,12 @@ class ResNet50LightningModule(pl.LightningModule):
             },
         }
 
+    def train_dataloader(self):
+        if not self.trainer.train_dataloader:
+            self.trainer.fit_loop.setup_data()
+
+        return self.trainer.train_dataloader
+
     def find_lr(self, optimizer):
         if not CONFIG["lr_finder"]:
             return
