@@ -85,7 +85,7 @@ class ResNet50LightningModule(pl.LightningModule):
             return
 
         lr_finder = LRFinder(self, optimizer, self.criterion)
-        lr_finder.range_test(self.train_dataloader(), end_lr=100, num_iter=1000)
+        lr_finder.range_test(self.train_dataloader(), end_lr=10, num_iter=1000)
         _, best_lr = lr_finder.plot()  # to inspect the loss-learning rate graph
         lr_finder.reset()
         self.max_lr = best_lr

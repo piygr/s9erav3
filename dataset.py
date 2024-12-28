@@ -110,30 +110,44 @@ class ImageNetDataset:
                     # Map the first value to the line number
                     self.class_mapping[first_value] = line_number
 
-            data_dir = CONFIG["root_dir"] + "/ILSVRC/Data/CLS-LOC/train"
-            label_file = CONFIG["root_dir"] + "/LOC_train_solution.csv"
-            if not train:
+            if train:
+                data_dir = CONFIG["root_dir"] + "/ILSVRC/Data/CLS-LOC/train"
+                output_path = "./data_annotations_train.csv"
+                with open(output_path, "a") as fw:
+                    # Walk through the directory tree
+                    for dirpath, dirnames, filenames in os.walk(data_dir):
+                        for file in filenames:
+                            # Get the relative path of the file
+                            relative_path = os.path.relpath(os.path.join(dirpath, file), data_dir).strip()
+                            image_id = file.split(".")[0].strip()
+                            class_id = relative_path.split("/")[0].strip()
+                            if class_id in self.class_mapping:
+                                self.dataset.append((relative_path, self.class_mapping[class_id]))
+
+                                # write to file
+                                fw.write(f"{relative_path},{self.class_mapping[class_id]}\n")
+            else:
                 data_dir = CONFIG["root_dir"] + "/ILSVRC/Data/CLS-LOC/val"
                 label_file = CONFIG["root_dir"] + "/LOC_val_solution.csv"
 
-            df = pd.read_csv(label_file)
+                df = pd.read_csv(label_file)
 
-            # Convert mapping to a dictionary for better usability
-            imageid_label_mapping_dict = {row[0].lower().strip(): self.class_mapping.get(row[1].split()[0].strip()) for _, row in df.iterrows()}
+                # Convert mapping to a dictionary for better usability
+                imageid_label_mapping_dict = {row[0].lower().strip(): self.class_mapping.get(row[1].split()[0].strip()) for _, row in df.iterrows()}
 
-            output_path = "./data_annotations_%s.csv" % ("train" if train else "val")
-            with open(output_path, "a") as fw:
-                # Walk through the directory tree
-                for dirpath, dirnames, filenames in os.walk(data_dir):
-                    for file in filenames:
-                        # Get the relative path of the file
-                        relative_path = os.path.relpath(os.path.join(dirpath, file), data_dir).strip()
-                        image_id = file.split(".")[0].strip()
-                        if image_id.lower() in imageid_label_mapping_dict:
-                            self.dataset.append((relative_path, imageid_label_mapping_dict[image_id.lower()]))
+                output_path = "./data_annotations_val.csv"
+                with open(output_path, "a") as fw:
+                    # Walk through the directory tree
+                    for dirpath, dirnames, filenames in os.walk(data_dir):
+                        for file in filenames:
+                            # Get the relative path of the file
+                            relative_path = os.path.relpath(os.path.join(dirpath, file), data_dir).strip()
+                            image_id = file.split(".")[0].strip()
+                            if image_id.lower() in imageid_label_mapping_dict:
+                                self.dataset.append((relative_path, imageid_label_mapping_dict[image_id.lower()]))
 
-                            #write to file
-                            fw.write(f"{relative_path},{imageid_label_mapping_dict[image_id.lower()]}\n")
+                                #write to file
+                                fw.write(f"{relative_path},{imageid_label_mapping_dict[image_id.lower()]}\n")
 
     def __len__(self):
         return len(self.dataset)
