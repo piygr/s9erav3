@@ -1,12 +1,12 @@
 CONFIG = {
     # General Configuration
-    "root_dir": "/kaggle/input/imagenet-object-localization-challenge",
+    "root_dir": "/mnt/ebs/imagenet-object-localization-challenge",
     "data_annotation_file": {
         "train": "./data_annotations_train.csv",
         "val": "./data_annotations_val.csv"
     },
     "num_classes": 1000,  # Number of prediction classes
-    "batch_size": 128,  # Batch size for training
+    "batch_size": 160,  # Batch size for training
     "epochs": 40,  # Total number of epochs
     "learning_rate": 1e-6,  # Initial learning rate
     "momentum": 0.9,
