@@ -14,6 +14,34 @@ from config import CONFIG
 
 scale = 1.1
 IMAGE_SIZE = 224
+
+
+def handle_mixed_image(image, background_color=(255, 255, 255)):
+    """
+    Handle RGBA images by blending with a background color or converting to RGB.
+
+    Args:
+        image (np.ndarray): Input image as a NumPy array (from PIL).
+        background_color (tuple): Background color to blend with, e.g., (255, 255, 255) for white.
+
+    Returns:
+        np.ndarray: RGB image as a NumPy array.
+    """
+    # Separate alpha channel and normalize it to [0, 1]
+    alpha = image[:, :, 3] / 255.0  # Shape: (H, W)
+    rgb = image[:, :, :3]  # Extract RGB channels
+
+    # Create a background image with the specified color
+    background = np.ones_like(rgb, dtype=np.float32) * np.array(background_color, dtype=np.float32)
+
+    # Blend the image with the background based on alpha
+    image = rgb * alpha[:, :, None] + background * (1 - alpha[:, :, None])
+
+    # Convert the blended image to uint8
+    image = np.clip(image, 0, 255).astype(np.uint8)
+
+    return image
+
 class AlbumentationsTransform:
     """
     Wrapper for applying Albumentations transforms to a PIL image.
@@ -67,41 +95,14 @@ class AlbumentationsTransform:
 
         self.transform = A.Compose(augs)
 
-    def handle_mixed_image(image, background_color=(255, 255, 255)):
-        """
-        Handle RGBA images by blending with a background color or converting to RGB.
 
-        Args:
-            image (np.ndarray): Input image as a NumPy array (from PIL).
-            background_color (tuple): Background color to blend with, e.g., (255, 255, 255) for white.
-
-        Returns:
-            np.ndarray: RGB image as a NumPy array.
-        """
-        # Ensure the image has 4 channels (RGBA)
-        if len(image.shape) == 2:
-            image = np.stack([image] * 3, axis=-1)
-
-        elif image.shape[-1] == 4:  # Check if it's RGBA
-            # Separate alpha channel and normalize it to [0, 1]
-            alpha = image[:, :, 3] / 255.0  # Shape: (H, W)
-            rgb = image[:, :, :3]  # Extract RGB channels
-
-            # Create a background image with the specified color
-            background = np.ones_like(rgb, dtype=np.float32) * np.array(background_color, dtype=np.float32)
-
-            # Blend the image with the background based on alpha
-            image = rgb * alpha[:, :, None] + background * (1 - alpha[:, :, None])
-
-            # Convert the blended image to uint8
-            image = np.clip(image, 0, 255).astype(np.uint8)
-
-        return image
 
     def __call__(self, image):
         image = np.array(image)
-
-        image = self.handle_mixed_image(image)
+        if len(image.shape) == 2:
+            image = np.stack([image] * 3, axis=-1)
+        elif image.shape[-1] == 4:
+            handle_mixed_image(image)
 
         return self.transform(image=image)["image"]
 
