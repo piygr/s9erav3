@@ -69,7 +69,6 @@ class AlbumentationsTransform:
                 ),
                 A.RandomCrop(width=IMAGE_SIZE, height=IMAGE_SIZE),
                 A.Rotate(limit=10, interpolation=1, border_mode=4, value=(0.485 * 255, 0.456 * 255, 0.406 * 255), p=p),
-                A.ColorJitter(brightness=0.6, contrast=0.6, saturation=0.6, hue=0.6, p=p),
                 A.HorizontalFlip(p=p),
                 A.Blur(p=0.1),
                 A.Posterize(p=0.1),
