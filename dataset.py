@@ -82,8 +82,10 @@ class AlbumentationsTransform:
                     min_holes=1,
                     min_height=112,
                     min_width=112,
-                    fill_value=(0.485, 0.456, 0.406),
-                    mask_fill_value=None,
+                    fill_value=(0.485, 0.456, 0.406), #not valid for new version
+                    fill=(0.485, 0.456, 0.406),
+                    mask_fill_value=None,    #not valid for new version
+                    fill_mask=None,
                     p=p,
                 ),
             ]
