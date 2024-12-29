@@ -42,6 +42,12 @@ def handle_mixed_image(image, background_color=(255, 255, 255)):
 
     return image
 
+def drop_alpha_if_exists(image_array):
+    if len(image_array.shape) == 3 and image_array.shape[-1] == 4:  # RGBA
+        return image_array[:, :, :3]  # Drop alpha
+    return image_array
+
+
 class AlbumentationsTransform:
     """
     Wrapper for applying Albumentations transforms to a PIL image.
@@ -68,12 +74,9 @@ class AlbumentationsTransform:
                     value=(0.485 * 255, 0.456 * 255, 0.406 * 255)
                 ),
                 A.RandomCrop(width=IMAGE_SIZE, height=IMAGE_SIZE),
-                A.Rotate(limit=10, interpolation=1, border_mode=4, value=(0.485 * 255, 0.456 * 255, 0.406 * 255), p=p),
+                A.Rotate(limit=(-10,10), interpolation=cv2.INTER_NEAREST, border_mode=cv2.BORDER_CONSTANT, value=(0.485 * 255, 0.456 * 255, 0.406 * 255), p=p),
                 A.HorizontalFlip(p=p),
                 A.Blur(p=0.1),
-                A.Posterize(p=0.1),
-                A.ToGray(p=0.1),
-                A.ChannelShuffle(p=0.05),
                 A.CoarseDropout(
                     num_holes_range=(1, 1),
                     hole_height_range = (112, 112),
@@ -98,7 +101,7 @@ class AlbumentationsTransform:
         if len(image.shape) == 2:
             image = np.stack([image] * 3, axis=-1)
         elif image.shape[-1] == 4:
-            handle_mixed_image(image)
+            image = drop_alpha_if_exists(image)
 
         return self.transform(image=image)["image"]
 
