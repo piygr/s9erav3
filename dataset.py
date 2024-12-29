@@ -76,15 +76,10 @@ class AlbumentationsTransform:
                 A.ToGray(p=0.1),
                 A.ChannelShuffle(p=0.05),
                 A.CoarseDropout(
-                    max_holes=1,
-                    max_height=112,
-                    max_width=112,
-                    min_holes=1,
-                    min_height=112,
-                    min_width=112,
-                    fill_value=(0.485, 0.456, 0.406), #not valid for new version
+                    num_holes_range=(1, 1),
+                    hole_height_range = (112, 112),
+                    hole_width_range = (112, 112),
                     fill=(0.485, 0.456, 0.406),
-                    mask_fill_value=None,    #not valid for new version
                     fill_mask=None,
                     p=p,
                 ),
