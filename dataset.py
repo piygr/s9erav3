@@ -187,7 +187,7 @@ class ImageNetDataset:
         image_dir = CONFIG["root_dir"] + "/ILSVRC/Data/CLS-LOC/%s/" % ("train" if self.train else "val")
         image, label = self.dataset[idx]
         image = Image.open(image_dir + image)
-        image = np.array(image)  # Convert PIL Image to NumPy array
+        #image = np.array(image)  # Convert PIL Image to NumPy array
         if self.transform:
             image = self.transform(image=image)  # Albumentations transform
         label = torch.tensor(label, dtype=torch.long)  # Convert label to tensor
