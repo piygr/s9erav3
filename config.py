@@ -6,12 +6,12 @@ CONFIG = {
         "val": "./data_annotations_val.csv"
     },
     "num_classes": 1000,  # Number of prediction classes
-    "batch_size": 160,  # Batch size for training
-    "epochs": 40,  # Total number of epochs
+    "batch_size": 256,  # Batch size for training
+    "epochs": 100,  # Total number of epochs
     "learning_rate": 1e-6,  # Initial learning rate
     "momentum": 0.9,
-    "weight_decay": 0.01,
-    "augment_prob": 0.5,  # Probability for augmentations (e.g., HorizontalFlip)
+    "weight_decay": 1e-4,
+    "augment_prob": 0.25,  # Probability for augmentations (e.g., HorizontalFlip)
 
     # Hardware Configuration
     "gpus": 1,  # Number of GPUs to use

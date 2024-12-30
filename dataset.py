@@ -97,11 +97,12 @@ class AlbumentationsTransform:
 
 
     def __call__(self, image):
+        image = image.convert("RGB")
         image = np.array(image)
-        if len(image.shape) == 2:
+        '''if len(image.shape) == 2:
             image = np.stack([image] * 3, axis=-1)
         elif image.shape[-1] == 4:
-            image = drop_alpha_if_exists(image)
+            image = drop_alpha_if_exists(image)'''
 
         return self.transform(image=image)["image"]
 

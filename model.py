@@ -29,7 +29,7 @@ class ResNet50LightningModule(pl.LightningModule):
         loss = self.criterion(y_hat, y)
         acc = (y_hat.argmax(dim=1) == y).float().mean()
         self.log("train_loss", loss, on_step=True, on_epoch=True, prog_bar=True)
-        self.log("train_acc", acc, on_step=True, on_epoch=True, prog_bar=True)
+        self.log("train_acc", acc*100, on_step=True, on_epoch=True, prog_bar=True)
 
         return loss
 
@@ -39,7 +39,7 @@ class ResNet50LightningModule(pl.LightningModule):
         loss = self.criterion(y_hat, y)
         acc = (y_hat.argmax(dim=1) == y).float().mean()
         self.log("val_loss", loss, on_step=False, on_epoch=True, prog_bar=True)
-        self.log("val_acc", acc, on_step=False, on_epoch=True, prog_bar=True)
+        self.log("val_acc", acc*100, on_step=False, on_epoch=True, prog_bar=True)
 
     '''def configure_optimizers(self):
         optimizer = optim.Adam(self.parameters(), lr=self.hparams.learning_rate)
@@ -62,6 +62,8 @@ class ResNet50LightningModule(pl.LightningModule):
                                 max_lr=self.max_lr,
                                 epochs=CONFIG["epochs"],
                                 steps_per_epoch=len(self.train_dataloader()),
+                                div_factor=10,
+                                final_div_factor=100,
                                 three_phase=True,
                                 verbose=False)
 
