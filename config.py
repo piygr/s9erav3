@@ -6,9 +6,9 @@ CONFIG = {
         "val": "./data_annotations_val.csv"
     },
     "num_classes": 1000,  # Number of prediction classes
-    "batch_size": 128, #256,  # Batch size for training
+    "batch_size": 384, #256,  # Batch size for training
     "epochs": 40,  # Total number of epochs
-    "learning_rate": 1e-6,  # Initial learning rate
+    "learning_rate": 0.8, #1e-6,  # Initial learning rate
     "momentum": 0.9,
     "weight_decay": 1e-4,
     "augment_prob": 0.25,  # Probability for augmentations (e.g., HorizontalFlip)
@@ -23,5 +23,5 @@ CONFIG = {
 
     "check_val_every_n_epoch": 5,
 
-    "lr_finder": True
+    "lr_finder": False
 }
