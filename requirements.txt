@@ -3,3 +3,4 @@ torch
 torchvision
 albumentations
 torch-lr-finder
+tensorboard
