@@ -56,7 +56,7 @@ cd s9erav3
 ### **2. Dataset Setup**
 Download and prepare the ImageNet 1k dataset from following:
 1. https://www.kaggle.com/competitions/imagenet-object-localization-challenge/data
-2. Update the `data_dir` path in the training script to point to your dataset directory.
+2. Update the `root_dir` path in the training script to point to your dataset directory.
 
 ### **3. Training**
 Run the training script:
