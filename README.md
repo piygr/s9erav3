@@ -3,7 +3,15 @@
 This repository contains the implementation of training a **ResNet50** model on the **ImageNet 1k dataset** using **PyTorch**. The project utilizes the **OneCycleLR Policy** for dynamic learning rate scheduling, ensuring faster convergence and efficient training. The training is performed over **40 epochs** with a **batch size of 384**, and the maximum learning rate is set to **0.8** (calculated using `LRFinder` and extrapolated for batch size 384).
 
 ---
+## **Results**
+- **Validation Accuracy**: 73% Top-1 accuracy achieved during training.
+- **Training Loss**: Demonstrates smooth convergence due to OneCycleLR.
 
+<img width="880" alt="Screenshot 2025-01-01 at 6 02 11 PM" src="https://github.com/user-attachments/assets/d5a801a2-4639-48cb-839e-bfd488f8d18e" />
+
+<img width="882" alt="Screenshot 2025-01-01 at 6 06 10 PM" src="https://github.com/user-attachments/assets/5800933f-388e-455a-9430-26d334733da4" />
+
+---
 ## **Features**
 - **Dataset**: ImageNet 1k (1,281,167 training images across 1,000 classes).
 - **Model Architecture**: ResNet50.
@@ -87,13 +95,6 @@ Here is the Space app link of the trained model -
 
 ---
 
-## **Results**
-- **Validation Accuracy**: 73% Top-1 accuracy achieved during training.
-- **Training Loss**: Demonstrates smooth convergence due to OneCycleLR.
-
-<img width="625" alt="Screenshot 2025-01-01 at 2 02 31 PM" src="https://github.com/user-attachments/assets/61cabe6f-1954-4cb5-ba89-4d2a745c8f47" />
-
----
 
 ## **References**
 - [ImageNet](http://www.image-net.org/)
